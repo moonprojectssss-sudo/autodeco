@@ -1,0 +1,15 @@
+{
+	"geode": "5.11.1",
+	"gd": {
+		"win": "*",
+		"android": "*",
+		"mac": "*",
+		"ios": "*"
+	},
+	"version": "v1.0.0",
+	"id": "xys.autodeco",
+	"name": "Auto Deco",
+	"developer": "XYS",
+	"description": "Deco otomatis buat layout di level editor: tema, mood, dan beat sync.",
+	"tags": ["editor", "utility"]
+}
