@@ -1,137 +1,281 @@
-# Auto Deco (Geode) — Made by XYS
+# Auto Deco
 
-Mod Geode buat Geometry Dash. Kamu bikin layout di level editor, tekan tombol **Deco**
-(di samping tombol trash), pilih tema + mood, lalu deco otomatis ditempel ke layout.
+**Made by XYS**
 
-> Status: **v1.0 (kerangka lengkap, belum dites compile)**. Ditulis mengacu docs Geode v5.x
-> (versi terbaru yang aku temukan waktu nulis: 5.11.1). Kalau build error, lihat bagian "Kalau error".
+Auto Deco is a Geode mod for the Geometry Dash level editor. It does two jobs:
+
+1. **Auto Deco** decorates your layout for you. Pick a theme and a mood, tap one button, and deco is placed along the top and underside of your blocks, in the background, and on the beat of your song.
+2. **Layout Generator** builds a brand-new cube layout from Easy up to Demon. Every layout is different, and every layout can be recreated with its seed.
+
+Both tools live in the editor, right next to the Trash button.
 
 ---
 
-## 1. Fitur
+## Contents
 
-- Tombol **Deco** di editor, nempel di samping tombol trash.
-- **Tema:** Space, Slaughter, Neon, Forest, Cyber.
-- **Mood:** Clean, Slaughterhouse, Limbo, Dreamy (ngatur kepadatan, ukuran, rotasi acak).
-- **Density:** Low / Medium / High.
-- **Beat sync:** isi BPM + kecepatan level. Deco besar ditaruh per 1 bar (4 ketukan),
-  dan ada "rel" aksen di atas dan bawah layout tiap ketukan (ketukan pertama tiap bar lebih besar).
-- **Palette sendiri:** kamu pilih deco favorit di editor, mod menyimpannya per tema dan per slot.
-- **Aman:** objek yang ternyata bukan deco (blok, spike, portal) otomatis dihapus lagi, jadi level gak jadi mustahil.
-- Hasil deco otomatis ke-**select**. Gak suka? Tekan Trash.
+- [Quick start](#quick-start)
+- [Where are the buttons?](#where-are-the-buttons)
+- [Auto Deco in detail](#auto-deco-in-detail)
+- [Tips for deco that looks great](#tips-for-deco-that-looks-great)
+- [Layout Generator in detail](#layout-generator-in-detail)
+- [Installing](#installing)
+- [Updating](#updating)
+- [Troubleshooting](#troubleshooting)
+- [Project structure](#project-structure)
+- [Publishing for everyone](#publishing-for-everyone)
+- [Roadmap](#roadmap)
 
-## 2. Cara pakai (di editor)
+---
 
-1. Bikin layout (blok, spike, dll).
-2. **Pertama kali:** isi palette dulu (lihat bagian 3).
-3. Tekan tombol **Deco** di samping Trash.
-4. Pilih Tema, Mood, Density. Mau ikut lagu? Nyalain **Beat Sync**, isi **BPM**, pilih **Kecepatan** level.
-5. Tekan **Generate!**
-6. Kalau ada objek yang kamu select sebelum tekan Generate, deco cuma dibuat buat objek itu.
-   Kalau tidak ada yang di-select, deco dibuat buat seluruh layout.
+## Quick start
 
-## 3. Palette (penting, ini yang bikin hasilnya bagus)
+**Decorate a layout**
 
-Mod ini gak bawa daftar ID deco bawaan, karena ID deco harus dicek langsung di game.
-Jadi kamu yang milih "bahan" deco-nya:
+1. Open the level editor and build a layout (blocks and spikes).
+2. Place a handful of deco objects you like (stars, saws, chains, whatever fits your theme).
+3. Select those deco objects, tap the green **Deco** button, choose a **Theme**, then tap **Edge** to save them. Do the same for **Hang**, **BG** and **Beat** if you want different objects for each job.
+4. Tap **Generate Deco**.
 
-1. Di editor, taruh/select beberapa objek **deco** yang cocok buat tema, misalnya bintang/planet buat Space.
-2. Buka popup **Deco**, pilih Tema yang sesuai.
-3. Tekan slot-nya:
-   - **Edge** = deco kecil di atas permukaan blok (rumput, duri deco, dll)
-   - **Hang** = deco yang menggantung di bawah blok (rantai, stalaktit, dll)
-   - **BG** = deco besar di latar belakang
-   - **Beat** = aksen yang muncul tiap ketukan
-4. Slot yang kosong otomatis pinjam slot lain di tema yang sama. Minimal isi **Edge** satu kali.
-5. **Reset** = kosongin palette tema yang lagi dipilih.
+**Generate a layout**
 
-Palette tersimpan otomatis, jadi cukup sekali per tema.
+1. Tap the blue **Gen** button.
+2. Choose **Difficulty**, **Length** and **Speed**.
+3. Tap **Generate Layout**, then playtest it.
 
-## 4. Cara build
+---
 
-### A. Di HP (Android + Termux) — pakai GitHub yang nge-build
+## Where are the buttons?
 
-Build Geode di HP berat banget, jadi yang nge-build GitHub Actions (gratis). Kamu cuma upload.
+Two round buttons sit at the top-left of the editor, in the same row as Undo, Redo and Trash:
+
+| Button | Color | Opens |
+|---|---|---|
+| **Deco** | green | the Auto Deco window |
+| **Gen** | blue | the Layout Generator window |
+
+Each window has a small **i** button in the corner that explains every option.
+
+---
+
+## Auto Deco in detail
+
+### Theme
+A theme is a folder for your saved deco. There are five: **Space, Slaughter, Neon, Forest, Cyber**. Each theme remembers its own palette, so you can build a Space palette once and switch between themes freely.
+
+### Mood
+The mood controls how the deco behaves, not what it looks like.
+
+| Mood | Character |
+|---|---|
+| **Clean** | Tidy and sparse accents. Great for modern and glow styles. |
+| **Slaughterhouse** | Dense and chaotic, lots of hanging pieces and tilted deco. |
+| **Limbo** | Very sparse, with huge silhouettes in the background. |
+| **Dreamy** | Soft and floaty, large background pieces with a slight tilt. |
+
+### Density
+**Low, Medium, High.** Scales how many pieces are placed. Start with Medium. Use Low on small layouts, because too much deco hides the gameplay.
+
+### Beat Sync
+Turn it on, type the **BPM** of your song, and pick the **Speed** your level uses.
+
+- Big background pieces are placed on every bar (every 4 beats).
+- Two rails of accents (above and below the layout) are placed on the beats. The first beat of each bar is bigger.
+- Low density only marks the bars, Medium marks every second beat, High marks every beat.
+
+Beat Sync assumes your song starts at the start of the level and that the speed does not change. If the deco looks a little off from the music, select it all and nudge it left or right.
+
+### Palette (the important part)
+Auto Deco does not guess which objects look good. You choose them:
+
+1. Place or select some **deco** objects in the editor.
+2. Open the Deco window and pick the theme they belong to.
+3. Tap a slot:
+   - **Edge**: small pieces placed on top of block surfaces (grass, thorns, lights).
+   - **Hang**: pieces hanging under blocks (chains, hooks, stalactites).
+   - **BG**: big pieces for the background (planets, towers, silhouettes).
+   - **Beat**: accents placed on the beat.
+4. **Reset** clears the palette of the current theme.
+
+Rules to know:
+- You need at least the **Edge** slot filled. Empty slots borrow from other slots.
+- Only real decoration objects are accepted. If you select a block or a spike, the mod ignores it.
+- The same safety applies when generating: anything that is not decoration is removed again immediately, so Auto Deco cannot add objects that kill the player.
+
+### After generating
+Everything that was added stays **selected**. That means you can:
+
+- tap **Edit Object** and change the color channel to recolor all of it at once,
+- change the **Z layer** of everything at once,
+- press **Trash** to undo the whole thing and try again.
+
+If you select part of your layout before generating, only that part is decorated. If you select nothing (or only deco), the whole level is used.
+
+---
+
+## Tips for deco that looks great
+
+These are common habits of good decorators (see the GD Creator School deco guide and community guides). Auto Deco gives you the placement. These steps give you the polish:
+
+1. **Work in passes.** Shapes and colors first, details after. Generate once, recolor, then add details by hand.
+2. **Use a tiny palette.** Two or three colors is plenty. Strong pairs: black and white, black and red, dark blue and purple.
+3. **Keep gameplay readable.** Deco should be darker or softer than blocks and spikes, never brighter. Put background pieces on back Z layers.
+4. **One idea per Z layer.** Background on B4 or B3, mid pieces on B2, accents closer to the front. Mixed layers look muddy.
+5. **Add glow.** Duplicate key pieces, enlarge them, lower the opacity, and use additive blending.
+6. **Make it move.** Pulse triggers on the beat make deco feel alive. Auto Deco places the objects on the beat, you add the pulses.
+7. **Do not overdecorate.** Empty space makes the busy parts look better.
+
+Quick recipes:
+
+- **Slaughterhouse look:** Slaughter theme, Slaughterhouse mood, save saws, chains, hooks and skulls. After generating, set the color channel to a deep red.
+- **Space look:** Space theme, Clean or Dreamy mood, save stars, gears and glowing blocks. Recolor to white and purple, background pieces dark.
+- **Limbo look:** Any theme, Limbo mood, Low density. Make the huge pieces black on a grey background.
+
+---
+
+## Layout Generator in detail
+
+Builds a cube layout from a library of jump patterns: single, double and triple spikes, platforms, stairs, spikes on platforms, yellow pad jumps, and double-single rhythms.
+
+### Difficulty
+
+| Difficulty | What you get |
+|---|---|
+| **Easy** | Wide gaps with single or double spikes. Relaxed timing. |
+| **Normal** | Adds platforms, stairs and spikes on top of platforms. |
+| **Hard** | Triple spikes, double-single rhythms and the odd pad jump. |
+| **Harder** | Tighter rhythm, more combos and more pads. |
+| **Insane** | Dense combos with short breathers. Needs fast reactions. |
+| **Demon** | Near-constant action with the tightest gaps this tool allows. |
+
+### Length
+**Tiny (~15 s), Short (~30 s), Medium (~60 s), Long (~90 s).** This is real level time at the chosen speed.
+
+### Speed
+**1x, 2x, 3x, 4x.** A speed portal is placed at the start. Gaps scale with the speed so the layout stays fair.
+
+### Seed
+Leave it empty for a random layout. After generating, the seed that was used is written into the box. Type the same seed again to get the same layout back, or share it with a friend.
+
+### Why every layout is different
+Each generation picks a random **motif** (three favorite patterns that get boosted), random gaps inside the difficulty range, random pattern order, and never repeats the same pattern three times in a row.
+
+### How it stays fair
+For a cube at normal speed, one jump covers about 4 blocks and rises about 2. The generator never places obstacle groups closer than the distance needed to land and jump again, and wider spike groups get more room. All distances scale with speed.
+
+### What to know
+- The layout is **not playtested** by the tool. Always playtest it. If a spot feels wrong, generate again or tweak it by hand.
+- Only the **cube** gamemode is generated for now.
+- New content is added **after** anything already in your level, so you can generate several sections in a row.
+- Everything stays selected after generating so you can move or delete it as one piece.
+- Add your own end trigger when you are done.
+
+---
+
+## Installing
+
+### Android (phone only, with Termux)
+Building Geode mods on a phone is heavy, so GitHub builds it for you for free.
 
 ```bash
-# 1) siapin Termux (sekali aja)
+# one-time setup
 pkg update -y && pkg install -y git gh unzip
 termux-setup-storage
 
-# 2) ambil zip ini dari Download, lalu ekstrak
-cd ~
-unzip ~/storage/downloads/AutoDeco.zip
-cd AutoDeco
+# unpack the project
+cd ~ && unzip ~/storage/downloads/AutoDeco-v1.1.zip && cd ~/AutoDeco
 
-# 3) upload ke GitHub (login lewat browser, ikuti petunjuk di layar)
-git init -b main
-git add .
-git commit -m "Auto Deco v1"
+# upload to your own GitHub repo (log in with the browser flow)
+git init -b main && git add . && git -c user.name=XYS -c user.email=xys@users.noreply.github.com commit -m "Auto Deco"
 gh auth login
-gh repo create autodeco --public --source=. --push
+gh auth setup-git
+git remote add origin https://github.com/YOUR-USERNAME/autodeco.git
+git push -u origin main
 
-# 4) tunggu build selesai (sekitar 5 sampai 15 menit), lalu download hasilnya
+# wait for the build (about 3 to 10 minutes), then download it
 gh run watch
 gh run download -n "Build Output"
 
-# 5) pasang ke Geode (cek dulu foldernya ada; kalau belum, buka GD/Geode sekali)
+# install into Geode
 cp *.geode ~/storage/shared/Android/media/com.geode.launcher/game/geode/mods/
 ```
 
-Setelah itu buka ulang Geometry Dash. Kalau build gagal, kirim hasil ini ke aku:
-`gh run view --log-failed`
+Restart Geometry Dash through the Geode launcher.
 
-Tanpa Termux juga bisa: upload folder ke GitHub lewat browser, buka tab Actions,
-download artifact "Build Output".
+### Desktop
+1. Install the Geode CLI and SDK: https://docs.geode-sdk.org/getting-started/
+2. Run `geode build` inside the project folder. It builds and installs the mod.
 
-### B. Di laptop (Windows/Mac/Linux)
+---
 
-1. Install Geode CLI dan SDK: ikuti https://docs.geode-sdk.org/getting-started/
-2. Di folder `AutoDeco`:
+## Updating
 
 ```bash
-geode build
+cd ~ && unzip -o ~/storage/downloads/AutoDeco-v1.1.zip
+cd ~/AutoDeco
+git add . && git -c user.name=XYS -c user.email=xys@users.noreply.github.com commit -m "Update" && git push
+gh run watch
+rm -f *.geode && gh run download -n "Build Output"
+cp *.geode ~/storage/shared/Android/media/com.geode.launcher/game/geode/mods/
 ```
 
-`geode build` bikin file `.geode` dan memasangnya ke Geometry Dash kamu.
-Cek versi SDK kamu dengan `geode sdk version`, lalu samain angka `"geode"` di `mod.json`.
+Fully close Geometry Dash before copying the new file, then open it again.
 
-## 5. Kalau error
+---
 
-Kerangka ini ditulis tanpa bisa compile di sini, jadi kemungkinan ada nama fungsi yang beda di SDK kamu.
-Titik yang paling mungkin bermasalah:
+## Troubleshooting
 
-| Pesan error menyebut | Perbaikan |
+| Problem | Fix |
 |---|---|
-| `m_zLayer` / `ZLayer::B2` | hapus baris `obj->m_zLayer = z;` di `src/Engine.hpp` (deco jadi layer default, bisa kamu ubah manual) |
-| `updateCustomScaleX` | ganti jadi `obj->setScale(scale);` |
-| `Popup::init` | cek signature di https://docs.geode-sdk.org/classes/geode/Popup |
-| `createTogglerWithStandardSprites` | ganti jadi `CCMenuItemToggler::createWithStandardSprites(this, nullptr, 0.55f)` |
-| `"geode"` di mod.json | samain dengan versi SDK terpasang |
-| Tombol Deco gak nempel di samping trash | ID tombol trash beda; ada tombol cadangan di kiri atas. Kirim screenshot ke aku |
+| The buttons do not appear | Make sure Auto Deco is enabled in the Geode mod list, and restart the game. The mod is built for Geode 5.x. |
+| The buttons are in the wrong spot | Tell me your screen and I will adjust. The position is calculated from the Undo row in `src/main.cpp`. |
+| "Your palette is empty" | Select deco objects in the editor and tap Edge, Hang, BG or Beat first. |
+| "Select some DECO objects" | What you selected is a block or a spike. Pick real decoration objects. |
+| Deco looks like spikes | Those are decoration objects shaped like spikes from your palette. They cannot hurt the player. Tap Reset and save different objects. |
+| Nothing was placed | The saved objects were rejected as non-decoration. Save new ones. |
+| A layout feels impossible | Playtest and regenerate. Please send me the seed and difficulty so I can improve the patterns. |
+| The build fails on GitHub | Open the failed run and send me the red error lines. |
 
-## 6. Struktur file
+---
+
+## Project structure
 
 ```
 AutoDeco/
-├── mod.json              info mod (nama, versi, developer XYS)
-├── CMakeLists.txt        build
-├── about.md, changelog.md
-├── .github/workflows/build.yml   build otomatis di GitHub
-└── src/
-    ├── main.cpp          nambahin tombol Deco di editor
-    ├── DecoPopup.hpp     GUI
-    ├── Engine.hpp        otak Auto Deco (nempatin deco)
-    └── Themes.hpp        daftar tema, mood, kecepatan (gampang diedit)
+|-- mod.json                 mod info
+|-- logo.png                 mod logo
+|-- about.md, changelog.md   shown on the Geode mod page
+|-- CMakeLists.txt           build file
+|-- .github/workflows/       automatic GitHub build
+`-- src/
+    |-- main.cpp             adds the Deco and Gen buttons to the editor
+    |-- DecoPopup.hpp        Auto Deco window
+    |-- LayoutPopup.hpp      Layout Generator window
+    |-- Engine.hpp           deco placement engine
+    |-- LayoutGen.hpp        layout patterns and generator
+    |-- UiKit.hpp            small UI helpers
+    `-- Themes.hpp           themes, moods, speeds (easy to extend)
 ```
 
-Mau nambah tema baru? Tambah satu baris di `kThemes` (dan ubah angka `std::array<Theme, N>`) di `Themes.hpp`.
+Want a new theme? Add one line to `kThemes` in `Themes.hpp` and bump the array size.
 
-## 7. Belum ada (rencana)
+---
 
-- Warna otomatis per tema (butuh color trigger)
-- Pulse trigger otomatis di tiap ketukan
-- Deteksi beat langsung dari lagu (sekarang manual lewat BPM)
-- Dukungan speed portal di tengah level (sekarang satu kecepatan buat seluruh level)
+## Publishing for everyone
 
-Made by XYS
+The mod is publish-ready: it has a logo, an about page, a changelog, a repository link and full metadata. To list it for all players, it has to be submitted to the **Geode Index**, where the Geode team reviews it before it goes live. Check the current rules at https://docs.geode-sdk.org before submitting. Keeping it private (just for you) works fine too.
+
+---
+
+## Roadmap
+
+- Automatic colors per theme
+- Pulse triggers on every beat
+- Beat detection straight from the song
+- Ship, ball, UFO and wave sections in the Layout Generator
+- Orb patterns
+- Speed changes mid-level
+- Layout Generator and Auto Deco in one tap
+
+---
+
+**Made by XYS**

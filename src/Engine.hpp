@@ -1,6 +1,6 @@
 #pragma once
-// Made by XYS
-// Mesin Auto Deco: baca layout -> taruh deco sesuai tema, mood, dan beat.
+// Auto Deco - Made by XYS
+// Deco engine: reads the layout and places deco around it, by theme, mood and beat.
 
 #include <Geode/Geode.hpp>
 #include <algorithm>
@@ -32,9 +32,9 @@ struct Result {
 };
 
 constexpr float kGrid = 30.f;
-constexpr int kMaxObjects = 3500;  // batas biar editor gak lag/crash di HP
+constexpr int kMaxObjects = 3500;  // keeps the editor responsive on phones
 
-// ---------- Palette (daftar ID deco per tema per slot) ----------
+// ---------- Palette (deco object IDs per theme and slot) ----------
 
 inline std::string palKey(int theme, int slot) {
     return fmt::format("pal-{}-{}", kThemes[theme].key, kSlotKeys[slot]);
@@ -44,7 +44,7 @@ inline std::vector<int> loadPal(int theme, int slot) {
     return Mod::get()->getSavedValue<std::vector<int>>(palKey(theme, slot), std::vector<int>{});
 }
 
-// Kalau slot kosong: pakai slot lain di tema yang sama, lalu tema lain.
+// Empty slot: borrow from another slot of the same theme, then from any other theme.
 inline std::vector<int> resolvePal(int theme, int slot) {
     auto p = loadPal(theme, slot);
     if (!p.empty()) return p;
@@ -61,15 +61,15 @@ inline std::vector<int> resolvePal(int theme, int slot) {
     return {};
 }
 
-// ---------- Helper ----------
+// ---------- Helpers ----------
 
 inline std::unordered_set<int>& badIds() {
     static std::unordered_set<int> s;
     return s;
 }
 
-// Bikin 1 objek. Kalau ternyata bukan deco (blok/spike/portal), langsung dihapus lagi.
-// Ini pengaman supaya Auto Deco gak pernah nambah objek yang bikin player mati.
+// Creates one object. If it turns out not to be decoration (block, spike, portal),
+// it is removed again right away, so Auto Deco can never add something that kills the player.
 inline GameObject* spawn(LevelEditorLayer* lel, int id, CCPoint pos, float scale, float rot, ZLayer z) {
     if (badIds().count(id)) return nullptr;
     auto obj = lel->createObject(id, pos, false);
@@ -85,7 +85,7 @@ inline GameObject* spawn(LevelEditorLayer* lel, int id, CCPoint pos, float scale
     obj->updateCustomScaleX(scale);
     obj->updateCustomScaleY(scale);
     if (rot != 0.f) obj->setRotation(rot);
-    obj->m_zLayer = z;  // kalau baris ini error waktu build, hapus aja
+    obj->m_zLayer = z;
     return obj;
 }
 
@@ -100,17 +100,8 @@ inline bool isLayoutType(GameObject* o) {
     }
 }
 
-// Kalau ada objek yang di-select -> itu layout-nya. Kalau tidak -> seluruh level.
-inline std::vector<GameObject*> gatherLayout(LevelEditorLayer* lel, EditorUI* ui, bool& usedSelection) {
+inline std::vector<GameObject*> collectLayout(CCArray* src) {
     std::vector<GameObject*> out;
-    CCArray* src = nullptr;
-    auto sel = ui->getSelectedObjects();
-    if (sel && sel->count() > 0) {
-        src = sel;
-        usedSelection = true;
-    } else {
-        src = lel->m_objects;
-    }
     if (!src) return out;
     for (auto* o : CCArrayExt<GameObject*>(src)) {
         if (o && isLayoutType(o)) out.push_back(o);
@@ -118,21 +109,35 @@ inline std::vector<GameObject*> gatherLayout(LevelEditorLayer* lel, EditorUI* ui
     return out;
 }
 
-// ---------- Generator utama ----------
+// If the selection contains layout objects, only those are decorated.
+// Otherwise (nothing selected, or only deco selected) the whole level is used.
+inline std::vector<GameObject*> gatherLayout(LevelEditorLayer* lel, EditorUI* ui, bool& usedSelection) {
+    auto sel = ui->getSelectedObjects();
+    if (sel && sel->count() > 0) {
+        auto out = collectLayout(sel);
+        if (!out.empty()) {
+            usedSelection = true;
+            return out;
+        }
+    }
+    return collectLayout(lel->m_objects);
+}
+
+// ---------- Main generator ----------
 
 inline Result generate(Params const& p) {
     Result r;
     auto lel = LevelEditorLayer::get();
     auto ui = EditorUI::get();
     if (!lel || !ui) {
-        r.error = "Editor belum kebuka.";
+        r.error = "The editor is not open.";
         return r;
     }
 
     auto layout = gatherLayout(lel, ui, r.usedSelection);
     r.layoutCount = static_cast<int>(layout.size());
     if (layout.empty()) {
-        r.error = "Layout kosong. Bikin blok/spike dulu, atau select bagian yang mau di-deco.";
+        r.error = "No layout found. Build some blocks or spikes first, or select the part to decorate.";
         return r;
     }
 
@@ -141,7 +146,7 @@ inline Result generate(Params const& p) {
     auto bgP = resolvePal(p.theme, Bg);
     auto beatP = resolvePal(p.theme, Beat);
     if (edgeP.empty()) {
-        r.error = "Palette masih kosong. Select objek DECO favoritmu di editor, lalu tekan Edge/Hang/BG/Beat.";
+        r.error = "Your palette is empty. Select deco objects in the editor, then tap Edge, Hang, BG or Beat.";
         return r;
     }
 
@@ -152,7 +157,7 @@ inline Result generate(Params const& p) {
     auto rnd = [&]() { return std::uniform_real_distribution<float>(0.f, 1.f)(rng); };
     auto rndR = [&](float a, float b) { return a + (b - a) * rnd(); };
 
-    // Petakan layout ke grid 30x30. Pusat blok ada di 15, 45, 75, ... jadi pakai floor.
+    // Map the layout onto a 30x30 grid. Block centers sit at 15, 45, 75... so use floor.
     std::set<std::pair<int, int>> occ, solid;
     float minX = std::numeric_limits<float>::max(), maxX = std::numeric_limits<float>::lowest();
     float minY = std::numeric_limits<float>::max(), maxY = std::numeric_limits<float>::lowest();
@@ -184,7 +189,7 @@ inline Result generate(Params const& p) {
         }
     };
 
-    // 1) Deco di permukaan atas (edge) dan yang menggantung di bawah (hang)
+    // 1) Edge deco on top of surfaces, hanging deco underneath
     for (auto const& [ix, iy] : solid) {
         if (r.made >= kMaxObjects) break;
         if (!occ.count({ix, iy + 1}) && rnd() < mood.edge * dens) {
@@ -197,9 +202,9 @@ inline Result generate(Params const& p) {
         }
     }
 
-    // 2) Deco besar di latar belakang. Kalau beat sync nyala: tiap 1 bar (4 ketukan).
+    // 2) Big background pieces. With beat sync they land on every bar (4 beats).
     float bpm = std::clamp(p.bpm, 40.f, 400.f);
-    float spacing = kSpeeds[p.speed].unitsPerSec * 60.f / bpm;  // jarak 1 ketukan (unit)
+    float spacing = kSpeeds[p.speed].unitsPerSec * 60.f / bpm;  // distance of one beat in units
     float stepX = p.beat ? spacing * 4.f : kGrid * 5.f;
     float startX = p.beat ? std::floor(minX / stepX) * stepX : minX;
     for (float x = startX; x <= maxX + kGrid * 3.f; x += stepX) {
@@ -216,7 +221,7 @@ inline Result generate(Params const& p) {
         }
     }
 
-    // 3) Aksen ketukan: dua "rel" (atas dan bawah layout). Ketukan ke-1 tiap bar lebih besar.
+    // 3) Beat accents: two rails (above and below the layout). The first beat of each bar is bigger.
     if (p.beat) {
         int stride = p.density == 0 ? 4 : (p.density == 1 ? 2 : 1);
         float topY = maxY + kGrid * 4.f;
@@ -232,7 +237,7 @@ inline Result generate(Params const& p) {
         }
     }
 
-    // Select semua deco baru: gak suka? tinggal tekan Trash.
+    // Select everything that was added: recolor it in one go, or press Trash to undo.
     if (r.made > 0) ui->selectObjects(created, false);
     return r;
 }

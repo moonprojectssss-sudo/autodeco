@@ -6,10 +6,11 @@
 		"mac": "*",
 		"ios": "*"
 	},
-	"version": "v1.0.0",
+	"version": "v1.1.0",
 	"id": "xys.autodeco",
 	"name": "Auto Deco",
 	"developer": "XYS",
-	"description": "Deco otomatis buat layout di level editor: tema, mood, dan beat sync.",
+	"description": "Auto-decorate your layouts and generate new ones in the level editor, with themes, moods, beat sync and 6 difficulty levels.",
+	"repository": "https://github.com/moonprojectssss-sudo/autodeco",
 	"tags": ["editor", "utility"]
 }
